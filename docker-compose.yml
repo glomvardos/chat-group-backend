@@ -3,8 +3,8 @@ services:
   dev-db:
     image: postgres:13
     environment:
-      POSTGRES_USER: shoppingify
+      POSTGRES_USER: chatgroup
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB: shoppingify
+      POSTGRES_DB: chatgroup
     ports:
       - '5434:5432'

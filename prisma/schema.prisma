@@ -20,12 +20,11 @@ model User {
   lastName String
 }
 
-model Category {
+model Channel {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
-  name String
-  note String
-  imageUrl String
-  category String
+  updatedAt DateTime @updatedAt
+  name String @unique
 }
+
 
