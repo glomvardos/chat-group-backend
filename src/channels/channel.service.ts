@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { CreateChannelDto } from './dto/dto';
@@ -6,6 +10,8 @@ import { CreateChannelDto } from './dto/dto';
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
+
+  // POST
   async createChannel(dto: CreateChannelDto) {
     try {
       const channel = await this.prisma.channel.create({
@@ -22,5 +28,29 @@ export class ChannelService {
       }
       throw error;
     }
+  }
+
+  async getChannels() {
+    const channels = await this.prisma.channel.findMany();
+    return channels;
+  }
+
+  // DELETE
+  async deleteChannel(id: string) {
+    const existingChannel = await this.prisma.channel.findUnique({
+      where: {
+        id: +id,
+      },
+    });
+
+    if (!existingChannel) throw new NotFoundException('Channel not found');
+
+    const channel = await this.prisma.channel.delete({
+      where: {
+        id: +id,
+      },
+    });
+
+    return channel;
   }
 }
