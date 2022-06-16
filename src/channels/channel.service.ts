@@ -30,6 +30,7 @@ export class ChannelService {
     }
   }
 
+  // GET
   async getChannels() {
     const channels = await this.prisma.channel.findMany();
     return channels;
