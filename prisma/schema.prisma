@@ -11,13 +11,14 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  email     String    @unique
-  password  String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  email     String   @unique
+  password  String?
   firstName String
   lastName  String
+  channels  Channel[]
 }
 
 model Channel {
@@ -25,4 +26,8 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   @unique
+  channelOwner Int
+  users     User[]
 }
+
+

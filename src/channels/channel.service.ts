@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { CreateChannelDto } from './dto/dto';
@@ -12,11 +8,17 @@ export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
   // POST
-  async createChannel(dto: CreateChannelDto) {
+  async createChannel(userId: number, dto: CreateChannelDto) {
     try {
       const channel = await this.prisma.channel.create({
         data: {
           name: dto.name.toLowerCase(),
+          channelOwner: userId,
+          users: {
+            connect: {
+              id: userId,
+            },
+          },
         },
       });
       return channel;
@@ -33,25 +35,35 @@ export class ChannelService {
   // GET
   async getChannels() {
     const channels = await this.prisma.channel.findMany();
+
+    return channels;
+  }
+
+  async getUserChannels(userId: number) {
+    const channels = await this.prisma.channel.findMany({
+      where: {
+        channelOwner: userId,
+      },
+    });
+
     return channels;
   }
 
   // DELETE
-  async deleteChannel(id: string) {
-    const existingChannel = await this.prisma.channel.findUnique({
+  async deleteChannel(userId: number, id: number) {
+    const channel = await this.prisma.channel.findUnique({
       where: {
-        id: +id,
+        id: id,
       },
     });
 
-    if (!existingChannel) throw new NotFoundException('Channel not found');
+    if (!channel || channel.channelOwner !== userId)
+      throw new ForbiddenException('Access to resource denied');
 
-    const channel = await this.prisma.channel.delete({
+    await this.prisma.channel.delete({
       where: {
-        id: +id,
+        id: id,
       },
     });
-
-    return channel;
   }
 }

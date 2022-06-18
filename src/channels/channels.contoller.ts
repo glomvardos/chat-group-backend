@@ -1,14 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/dto';
 
+@UseGuards(JwtGuard)
 @Controller('channels')
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
   @Post('create-channel')
-  createChannel(@Body() dto: CreateChannelDto) {
-    return this.channelService.createChannel(dto);
+  createChannel(@GetUser('id') userId: number, @Body() dto: CreateChannelDto) {
+    return this.channelService.createChannel(userId, dto);
   }
 
   @Get('channels')
@@ -16,8 +28,16 @@ export class ChannelController {
     return this.channelService.getChannels();
   }
 
+  @Get('user-channels')
+  getUserChannels(@GetUser('id') userId: number) {
+    return this.channelService.getUserChannels(userId);
+  }
+
   @Delete('delete-channel/:id')
-  deleteChannel(@Param('id') id: string) {
-    return this.channelService.deleteChannel(id);
+  deleteChannel(
+    @GetUser('id') userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.channelService.deleteChannel(userId, id);
   }
 }
