@@ -3,8 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -39,5 +42,14 @@ export class ChannelController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.channelService.deleteChannel(userId, id);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch('join-channel/:id')
+  joinChannel(
+    @GetUser('id') userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.channelService.joinChannel(userId, id);
   }
 }

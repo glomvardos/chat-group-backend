@@ -8,11 +8,6 @@ export const GetUser = createParamDecorator(
       return request.user.id;
     }
 
-    return {
-      id: request.user.id,
-      email: request.user.email,
-      firstName: request.user.firstName,
-      lastName: request.user.lastName,
-    };
+    return request.user;
   },
 );

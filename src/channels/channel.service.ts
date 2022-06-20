@@ -34,7 +34,18 @@ export class ChannelService {
 
   // GET
   async getChannels() {
-    const channels = await this.prisma.channel.findMany();
+    const channels = await this.prisma.channel.findMany({
+      include: {
+        users: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
 
     return channels;
   }
@@ -65,5 +76,32 @@ export class ChannelService {
         id: id,
       },
     });
+  }
+
+  // PATCH
+  async joinChannel(userId: number, id: number) {
+    const existingChannel = await this.prisma.channel.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!existingChannel)
+      throw new ForbiddenException('Channel does not exist');
+
+    const channel = await this.prisma.channel.update({
+      where: {
+        id: id,
+      },
+      data: {
+        users: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    return channel;
   }
 }
