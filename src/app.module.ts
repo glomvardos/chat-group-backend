@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { ChannelModule } from './channels/channels.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     AuthModule,
     ChannelModule,
+    MessagesModule,
     PrismaModule,
   ],
 })
