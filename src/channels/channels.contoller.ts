@@ -52,4 +52,13 @@ export class ChannelController {
   ) {
     return this.channelService.joinChannel(userId, id);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch('leave-channel/:id')
+  leaveChannel(
+    @GetUser('id') userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.channelService.leaveChannel(userId, id);
+  }
 }

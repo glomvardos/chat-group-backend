@@ -86,6 +86,9 @@ export class ChannelService {
       },
     });
 
+    if (existingChannel.channelOwner === userId)
+      throw new ForbiddenException('You cannot join your own channel');
+
     if (!existingChannel)
       throw new ForbiddenException('Channel does not exist');
 
@@ -96,6 +99,35 @@ export class ChannelService {
       data: {
         users: {
           connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    return channel;
+  }
+
+  async leaveChannel(userId: number, id: number) {
+    const existingChannel = await this.prisma.channel.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (existingChannel.channelOwner === userId)
+      throw new ForbiddenException('You cannot leave your own channel');
+
+    if (!existingChannel)
+      throw new ForbiddenException('Channel does not exist');
+
+    const channel = await this.prisma.channel.update({
+      where: {
+        id: id,
+      },
+      data: {
+        users: {
+          disconnect: {
             id: userId,
           },
         },
