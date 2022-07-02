@@ -31,6 +31,7 @@ model Channel {
   channelOwner Int
   users     User[] // Many to many relationship
   messages  Message[] // One to many relationship
+
 }
 
 model Message {
@@ -38,7 +39,7 @@ model Message {
   createdAt DateTime @default(now())
   message  String
   channelId Int
-  channel   Channel @relation(fields: [channelId], references: [id]) // One to many relationship
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade ) // One to many relationship
   userId    Int
   user      User @relation(fields: [userId], references: [id])  // One to many relationship
 }

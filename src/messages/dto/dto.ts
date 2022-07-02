@@ -9,3 +9,8 @@ export class CreateMessageDto {
   @IsInt()
   channelId: number;
 }
+export class EditMessageDto {
+  @IsNotEmpty()
+  @IsString()
+  message: string;
+}
