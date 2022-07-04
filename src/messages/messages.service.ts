@@ -35,10 +35,6 @@ export class MessagesService {
       },
     });
 
-    messages.sort((a, b) =>
-      b.createdAt.toString().localeCompare(a.createdAt.toString()),
-    );
-
     return messages;
   }
 

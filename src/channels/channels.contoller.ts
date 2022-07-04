@@ -14,7 +14,7 @@ import {
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { ChannelService } from './channel.service';
-import { CreateChannelDto } from './dto/dto';
+import { CreateChannelDto, LeaveChannelDto } from './dto/dto';
 
 @UseGuards(JwtGuard)
 @Controller('channels')
@@ -29,6 +29,11 @@ export class ChannelController {
   @Get('channels')
   getChannels() {
     return this.channelService.getChannels();
+  }
+
+  @Get('channel/:id')
+  getChannel(@Param('id', ParseIntPipe) id: number) {
+    return this.channelService.getChannel(id);
   }
 
   @Get('user-channels')
@@ -56,7 +61,7 @@ export class ChannelController {
   @HttpCode(HttpStatus.OK)
   @Patch('leave-channel/:id')
   leaveChannel(
-    @GetUser('id') userId: number,
+    @Body() userId: LeaveChannelDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.channelService.leaveChannel(userId, id);

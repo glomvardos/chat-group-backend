@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { CreateChannelDto } from './dto/dto';
+import { CreateChannelDto, LeaveChannelDto } from './dto/dto';
 
 @Injectable()
 export class ChannelService {
@@ -48,6 +48,30 @@ export class ChannelService {
     });
 
     return channels;
+  }
+
+  async getChannel(id: number) {
+    const channel = await this.prisma.channel.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        users: true,
+        messages: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return channel;
   }
 
   async getUserChannels(userId: number) {
@@ -108,14 +132,14 @@ export class ChannelService {
     return channel;
   }
 
-  async leaveChannel(userId: number, id: number) {
+  async leaveChannel(user: LeaveChannelDto, id: number) {
     const existingChannel = await this.prisma.channel.findUnique({
       where: {
         id: id,
       },
     });
 
-    if (existingChannel.channelOwner === userId)
+    if (existingChannel.channelOwner === user.id)
       throw new ForbiddenException('You cannot leave your own channel');
 
     if (!existingChannel)
@@ -128,7 +152,7 @@ export class ChannelService {
       data: {
         users: {
           disconnect: {
-            id: userId,
+            id: user.id,
           },
         },
       },
